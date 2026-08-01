@@ -1,9 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/ParishRota.Domain/ParishRota.Domain.csproj" />
-  </Folder>
-  <Folder Name="/src/ParishRota.Functions/">
-    <Project Path="src/ParishRota.Functions/ParishRota_Functions.csproj" />
+    <Project Path="src/ParishRota.Functions/ParishRota.Functions.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/ParishRota.Domain.Tests/ParishRota.Domain.Tests.csproj" />
