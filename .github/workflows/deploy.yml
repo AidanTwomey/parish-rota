@@ -40,10 +40,16 @@ jobs:
       - name: Publish
         run: dotnet publish ${{ env.FUNCTIONS_PROJECT }} --no-build -c Release -o ./publish
 
+      # include-hidden-files is required, not optional: the .NET isolated worker
+      # publishes a `.azurefunctions/` directory, and upload-artifact skips
+      # dotfiles by default. Without it the deploy fails at Kudu's content
+      # validation with "Cannot find required .azurefunctions directory".
+      # Safe here because ./publish holds only build output.
       - uses: actions/upload-artifact@v4
         with:
           name: functions-package
           path: ./publish
+          include-hidden-files: true
           retention-days: 7
 
   deploy:
@@ -55,6 +61,18 @@ jobs:
         with:
           name: functions-package
           path: ./publish
+
+      # Kudu rejects a package missing this directory with a message that reads
+      # like a platform fault rather than a packaging one. Check it here, where
+      # both possible causes (publish didn't emit it, or the artifact round-trip
+      # dropped it) are already behind us.
+      - name: Verify package contents
+        run: |
+          if [ ! -d ./publish/.azurefunctions ]; then
+            echo "::error::.azurefunctions/ missing from the package — Kudu will reject it."
+            ls -la ./publish
+            exit 1
+          fi
 
       - uses: azure/login@v2
         with:
