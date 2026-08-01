@@ -62,7 +62,26 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
+      # Terraform gives the Function App a random suffix for global uniqueness,
+      # so hand-copying the name into a variable is easy to get wrong (and easy
+      # to forget). Fall back to finding it by the tags Terraform sets.
+      - name: Resolve Function App name
+        id: app
+        run: |
+          NAME="${{ vars.AZURE_FUNCTIONAPP_NAME }}"
+          if [ -z "$NAME" ]; then
+            NAME=$(az functionapp list \
+              --query "[?tags.project=='parishrota' && tags.environment=='prod'].name | [0]" \
+              -o tsv)
+          fi
+          if [ -z "$NAME" ] || [ "$NAME" = "null" ]; then
+            echo "::error::No Function App found. Has the infra workflow applied successfully?"
+            exit 1
+          fi
+          echo "Deploying to $NAME"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+
       - uses: Azure/functions-action@v1
         with:
-          app-name: ${{ vars.AZURE_FUNCTIONAPP_NAME }}
+          app-name: ${{ steps.app.outputs.name }}
           package: ./publish
