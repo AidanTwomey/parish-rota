@@ -1,0 +1,68 @@
+name: deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  DOTNET_VERSION: "10.0.x"
+  FUNCTIONS_PROJECT: src/ParishRota.Functions/ParishRota.Functions.csproj
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore -c Release
+
+      # Domain logic is developed test-first (CLAUDE.md) — a red suite must
+      # never reach Azure.
+      - name: Test
+        run: dotnet test --no-build -c Release --verbosity normal
+
+      - name: Publish
+        run: dotnet publish ${{ env.FUNCTIONS_PROJECT }} --no-build -c Release -o ./publish
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: functions-package
+          path: ./publish
+          retention-days: 7
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          name: functions-package
+          path: ./publish
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ vars.AZURE_FUNCTIONAPP_NAME }}
+          package: ./publish

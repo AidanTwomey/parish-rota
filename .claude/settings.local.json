@@ -15,7 +15,26 @@
       "Bash(npx --version)",
       "Bash(npx -y @devcontainers/cli@latest up --workspace-folder .)",
       "Bash(npx -y @devcontainers/cli@latest exec --workspace-folder . bash -lc ' *)",
-      "Bash(npx -y @devcontainers/cli@latest up --workspace-folder . --remove-existing-container)"
+      "Bash(npx -y @devcontainers/cli@latest up --workspace-folder . --remove-existing-container)",
+      "Bash(terraform version *)",
+      "Bash(az version *)",
+      "Bash(gh --version)",
+      "WebFetch(domain:registry.terraform.io)",
+      "Bash(cp infra/main.tf /tmp/main.tf.bak)",
+      "Bash(sed -i '' 's/dotnet_version              = \"10.0\"/dotnet_version              = \"99.0\"/' infra/main.tf)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(chmod +x infra/bootstrap.sh)",
+      "Bash(bash -n infra/bootstrap.sh)",
+      "Bash(python3 -c ' *)",
+      "Bash(echo \"terraform fmt -check exit: $?\")",
+      "Bash(command -v jq)",
+      "Bash(jq --version)",
+      "Bash(echo \"jq: $\\(jq --version\\)\")",
+      "Read(//Users/aidantwomey/.claude/**)",
+      "Bash(chmod +x ~/.claude/statusline.sh)",
+      "Bash(~/.claude/statusline.sh)",
+      "Bash(echo \"  <- exit $?\")",
+      "Bash(npx -y @devcontainers/cli@latest exec --workspace-folder . bash -lc 'echo \"container OK: $\\(dotnet --version\\) / func $\\(func --version\\)\"; ls /workspaces/parish-rota')"
     ]
   }
 }

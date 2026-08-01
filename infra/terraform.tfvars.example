@@ -1,0 +1,16 @@
+# Copy to terraform.tfvars for local plans. Real secrets come from GitHub
+# Actions variables/secrets in CI (TF_VAR_*), so never commit a filled-in copy —
+# terraform.tfvars is gitignored.
+
+project     = "parishrota"
+environment = "prod"
+location    = "uksouth"
+
+# Only one Cosmos account per subscription may claim the free tier. Set to
+# false if you have already used it elsewhere, or apply will fail.
+cosmos_free_tier = true
+
+whatsapp_phone_number_id = ""
+whatsapp_access_token    = ""
+whatsapp_verify_token    = ""
+anthropic_api_key        = ""
