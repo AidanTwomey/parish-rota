@@ -1,0 +1,51 @@
+{
+  "name": "Parish Rota (.NET 10 + Azure Functions)",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+
+  "features": {
+    // Azure CLI + Bicep, for deploying the infrastructure in ADR 0006.
+    "ghcr.io/devcontainers/features/azure-cli:1": {
+      "installBicep": true
+    },
+    // Node is here only so Azurite can be installed — the Functions host needs
+    // an AzureWebJobsStorage endpoint before it will start locally.
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    }
+  },
+
+  "postCreateCommand": "npm install -g azurite && git config --global --add safe.directory ${containerWorkspaceFolder} && git config --global include.path ${containerWorkspaceFolder}/.devcontainer/gitconfig",
+  // setsid detaches Azurite into its own session — a plain `nohup ... &` is killed
+  // when the CLI tears down the lifecycle hook's process group.
+  "postStartCommand": "mkdir -p /tmp/azurite && setsid azurite --silent --location /tmp/azurite < /dev/null > /tmp/azurite/azurite.log 2>&1 &",
+
+  "forwardPorts": [7071, 10000, 10001, 10002],
+  "portsAttributes": {
+    "7071": { "label": "Functions host", "onAutoForward": "notify" },
+    "10000": { "label": "Azurite blob", "onAutoForward": "silent" },
+    "10001": { "label": "Azurite queue", "onAutoForward": "silent" },
+    "10002": { "label": "Azurite table", "onAutoForward": "silent" }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.csdevkit",
+        "ms-azuretools.vscode-azurefunctions",
+        "ms-azuretools.vscode-bicep",
+        "ms-azuretools.vscode-cosmosdb",
+        "Azurite.azurite"
+      ],
+      "settings": {
+        "azureFunctions.projectLanguage": "C#",
+        "azureFunctions.projectRuntime": "~4",
+        "azurite.location": "/tmp/azurite"
+      }
+    }
+  },
+
+  "remoteUser": "vscode"
+}

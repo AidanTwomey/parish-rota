@@ -1,0 +1,3 @@
+# Rota periods follow the liturgical calendar
+
+Rotas are generated per liturgical season (Advent & Christmastide, Lent & Eastertide, Ordinary Time) rather than per calendar month or fixed interval, because that is how parishes already think and print rotas. Long stretches of Ordinary Time (up to ~27 weeks after Pentecost) are subdivided into roughly 8-week blocks — asking readers to commit to dates six months out just harvests drops later. Season boundaries are computed deterministically (Easter computus), a one-off, testable piece of calendar code. Plain bi-monthly periods were rejected as cheaper but alien to the domain.

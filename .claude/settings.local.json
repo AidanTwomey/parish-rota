@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs -I{} sh -c 'echo \"== {} ==\"; cat \"{}\"')",
+      "Read(//Users/aidantwomey/.claude/plugins/cache/claude-plugins-official/mattpocock-skills/1.2.0/skills/engineering/domain-modeling/**)",
+      "Read(//Users/aidantwomey/.claude/plugins/cache/claude-plugins-official/mattpocock-skills/1.2.0/skills/productivity/grilling/**)",
+      "Skill(claude-api)",
+      "Bash(docker version *)",
+      "Bash(dotnet --version)",
+      "Bash(docker pull *)",
+      "Bash(docker run *)",
+      "Bash(echo \"default user: $\\(docker run --rm mcr.microsoft.com/devcontainers/dotnet:10.0 whoami\\)\")",
+      "Bash(docker image *)",
+      "Bash(docker build *)",
+      "Bash(npx --version)",
+      "Bash(npx -y @devcontainers/cli@latest up --workspace-folder .)",
+      "Bash(npx -y @devcontainers/cli@latest exec --workspace-folder . bash -lc ' *)",
+      "Bash(npx -y @devcontainers/cli@latest up --workspace-folder . --remove-existing-container)"
+    ]
+  }
+}

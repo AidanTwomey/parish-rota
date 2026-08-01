@@ -1,0 +1,28 @@
+# Shared git defaults for the dev container.
+# Included from the container's ~/.gitconfig by postCreateCommand.
+#
+# Deliberately no [user] section — VS Code Dev Containers copies your host
+# name/email in automatically, and hard-coding someone else's identity here
+# would misattribute commits.
+
+[init]
+	defaultBranch = main
+
+[core]
+	# Normalise to LF in the repo; the container is Linux, hosts may not be.
+	autocrlf = input
+
+[pull]
+	rebase = true
+
+[fetch]
+	prune = true
+
+[push]
+	autoSetupRemote = true
+
+[diff]
+	algorithm = histogram
+
+[rerere]
+	enabled = true

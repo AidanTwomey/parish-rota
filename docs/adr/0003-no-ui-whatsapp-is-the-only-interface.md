@@ -1,0 +1,3 @@
+# No UI — WhatsApp is the only interface
+
+Readers *and* the Coordinator interact with the system exclusively through WhatsApp conversation: rota approval, reader management, drops, cover, and escalations. There is no web app, no auth system, and no sessions — a person's phone number is their identity. This keeps running cost near zero and the operational surface tiny. Free-text messages are parsed by an LLM into intents. If direct data inspection is ever needed, the Coordinator/developer uses the Azure portal to look at the raw documents; that is a debugging escape hatch, not a product surface. A web admin can be added later without changing the domain model.

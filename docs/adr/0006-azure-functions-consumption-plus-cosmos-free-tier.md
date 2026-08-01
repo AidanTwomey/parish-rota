@@ -1,0 +1,3 @@
+# Azure Functions (Consumption) + Cosmos DB free tier
+
+Compute is Azure Functions on the Consumption plan: an HTTPS webhook for inbound WhatsApp, timer triggers for prompts, generation, reminders, and cover-request deadlines. The free monthly grant exceeds this workload by orders of magnitude. Storage is Cosmos DB's free tier (1000 RU/s, 25 GB), partition key `parishId`, chosen over Table Storage because it is equally £0 at this scale and its portal Data Explorer doubles as the admin escape hatch (ADR 0003). Infrastructure is declared in code (Bicep) so adding a parish is configuration. Residual running costs are WhatsApp template messages (~£2–3/month) and LLM intent-parsing calls.
