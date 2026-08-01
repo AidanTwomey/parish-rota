@@ -13,6 +13,14 @@
     // an AzureWebJobsStorage endpoint before it will start locally.
     "ghcr.io/devcontainers/features/node:1": {
       "version": "lts"
+    },
+    // Terraform, so infra can be planned locally instead of round-tripping
+    // through GitHub Actions to read an error message (ADR 0007).
+    // Pinned to match TF_VERSION in .github/workflows/infra.yml. Terraform
+    // records the writing version in state, so a newer local binary would make
+    // CI fail with "state snapshot was created by a newer version".
+    "ghcr.io/devcontainers/features/terraform:1": {
+      "version": "1.15.8"
     }
   },
 

@@ -76,6 +76,12 @@ jobs:
           fi
           if [ -z "$NAME" ] || [ "$NAME" = "null" ]; then
             echo "::error::No Function App found. Has the infra workflow applied successfully?"
+            echo "--- Function Apps visible to this identity ---"
+            az functionapp list -o table 2>&1 || true
+            echo "--- Resource groups ---"
+            az group list --query "[].name" -o table 2>&1 || true
+            echo "--- Subscription in context ---"
+            az account show --query "{name:name, id:id}" -o table 2>&1 || true
             exit 1
           fi
           echo "Deploying to $NAME"

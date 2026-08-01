@@ -17,7 +17,8 @@ permissions:
   id-token: write # required for OIDC login to Azure
 
 env:
-  TF_VERSION: "1.13.1"
+  # Keep in step with the terraform feature version in .devcontainer/devcontainer.json.
+  TF_VERSION: "1.15.8"
   ARM_USE_OIDC: "true"
   ARM_USE_AZUREAD: "true" # state access via Entra, not a storage key
   ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
@@ -32,11 +33,35 @@ env:
 jobs:
   plan:
     runs-on: ubuntu-latest
+    # Runs under 'prod' so it can read the prod-scoped variables, and so its
+    # OIDC subject is environment:prod — the same federated credential the apply
+    # and deploy jobs use. Trade-off: adding a required reviewer to prod would
+    # gate pull request plans behind an approval too.
+    environment: prod
     defaults:
       run:
         working-directory: infra
     steps:
       - uses: actions/checkout@v5
+
+      # Empty values here surface much later as a confusing Terraform backend
+      # error about Azure CLI login, so fail fast and say what's actually wrong.
+      - name: Check required configuration
+        run: |
+          missing=""
+          [ -n "$ARM_CLIENT_ID" ]                      || missing="$missing AZURE_CLIENT_ID"
+          [ -n "$ARM_TENANT_ID" ]                      || missing="$missing AZURE_TENANT_ID"
+          [ -n "$ARM_SUBSCRIPTION_ID" ]                || missing="$missing AZURE_SUBSCRIPTION_ID"
+          [ -n "${{ vars.TFSTATE_RESOURCE_GROUP }}" ]  || missing="$missing TFSTATE_RESOURCE_GROUP"
+          [ -n "${{ vars.TFSTATE_STORAGE_ACCOUNT }}" ] || missing="$missing TFSTATE_STORAGE_ACCOUNT"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing variables:$missing"
+            echo "This job runs under the 'prod' environment, so these must be visible to it:"
+            echo "  Settings -> Environments -> prod -> Environment variables"
+            echo "  (or Settings -> Secrets and variables -> Actions -> Variables, repository scope)"
+            exit 1
+          fi
+          echo "Configuration present."
 
       - uses: hashicorp/setup-terraform@v3
         with:

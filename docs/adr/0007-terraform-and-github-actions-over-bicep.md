@@ -10,7 +10,7 @@ CI/CD is GitHub Actions authenticating to Azure via **OIDC federated credentials
 
 ## Consequences
 
-- The `prod` GitHub Environment gates `terraform apply` and the Function App deploy; adding a required reviewer there turns both into manual approvals.
+- Every job — `plan`, `apply`, and the Function App deploy — runs under the `prod` GitHub Environment. Configuration therefore lives in exactly one place (the environment's variables), and every job presents the same OIDC subject, so `environment:prod` is the only federated credential strictly required. The cost is that adding a required reviewer to `prod` would gate pull request plans behind an approval as well as deployments; if that becomes annoying, move the variables to repository scope and drop `environment: prod` from the `plan` job.
 - Because the apply job declares `environment: prod`, its OIDC subject claim differs from the plan job's. A credential is therefore required per subject (`ref:refs/heads/main`, `pull_request`, `environment:prod`) — a missing one shows up as `AADSTS700213`, which names the presented subject and is the fastest way to diagnose it.
 - This repository was created after 15 July 2026, so GitHub presents an **immutable** subject claim embedding numeric owner and repository IDs (`repo:OWNER@706509/REPO@1319307839:environment:prod`). Those IDs cannot be removed via sub-claim customization, so credentials must match the immutable form. `bootstrap.sh` reads the IDs from the GitHub API and registers both forms, so it works either side of the cutoff.
 - Secrets reach the Function App as plain app settings via `TF_VAR_*`. That is adequate for an MVP but means the values are visible to anyone with portal access; moving them to Key Vault references is the intended follow-up.
