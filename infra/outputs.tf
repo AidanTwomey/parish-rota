@@ -5,17 +5,17 @@ output "resource_group_name" {
 
 output "function_app_name" {
   description = "Function App name — pass this to the deploy workflow."
-  value       = azurerm_linux_function_app.this.name
+  value       = azurerm_function_app_flex_consumption.this.name
 }
 
 output "function_app_hostname" {
   description = "Default hostname of the Function App."
-  value       = azurerm_linux_function_app.this.default_hostname
+  value       = azurerm_function_app_flex_consumption.this.default_hostname
 }
 
 output "whatsapp_webhook_url" {
   description = "Register this URL as the WhatsApp Cloud API callback."
-  value       = "https://${azurerm_linux_function_app.this.default_hostname}/api/whatsapp"
+  value       = "https://${azurerm_function_app_flex_consumption.this.default_hostname}/api/whatsapp"
 }
 
 output "cosmos_account_name" {

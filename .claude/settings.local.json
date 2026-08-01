@@ -36,7 +36,9 @@
       "Bash(echo \"  <- exit $?\")",
       "Bash(npx -y @devcontainers/cli@latest exec --workspace-folder . bash -lc 'echo \"container OK: $\\(dotnet --version\\) / func $\\(func --version\\)\"; ls /workspaces/parish-rota')",
       "WebFetch(domain:docs.github.com)",
-      "Bash(git ls-tree *)"
+      "Bash(git ls-tree *)",
+      "WebSearch",
+      "Bash(command -v terraform)"
     ]
   }
 }

@@ -9,7 +9,7 @@ A multi-tenant WhatsApp-based rota service for Catholic parish Readers. First te
 
 ## Stack
 
-- C# / .NET, Azure Functions (Consumption plan)
+- C# / .NET, Azure Functions (Flex Consumption plan — see the amendment in ADR-0006)
 - Cosmos DB free tier, partition key `parishId`
 - Infrastructure as code with Terraform (`infra/`), deployed by GitHub Actions via OIDC — see ADR-0007
 - Intent parsing of inbound WhatsApp messages via Claude Haiku 4.5 (structured outputs); when the parse is ambiguous, the bot asks a clarifying question or escalates to the Coordinator — it never guesses
