@@ -34,7 +34,8 @@
       "Bash(chmod +x ~/.claude/statusline.sh)",
       "Bash(~/.claude/statusline.sh)",
       "Bash(echo \"  <- exit $?\")",
-      "Bash(npx -y @devcontainers/cli@latest exec --workspace-folder . bash -lc 'echo \"container OK: $\\(dotnet --version\\) / func $\\(func --version\\)\"; ls /workspaces/parish-rota')"
+      "Bash(npx -y @devcontainers/cli@latest exec --workspace-folder . bash -lc 'echo \"container OK: $\\(dotnet --version\\) / func $\\(func --version\\)\"; ls /workspaces/parish-rota')",
+      "WebFetch(domain:docs.github.com)"
     ]
   }
 }

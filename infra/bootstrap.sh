@@ -87,9 +87,37 @@ add_fic() {
   }" -o none 2>/dev/null || echo "  (federated credential '${name}' already exists)"
 }
 
+# Repositories created (or renamed/transferred) after 15 July 2026 present an
+# *immutable* subject claim that embeds numeric owner and repository IDs:
+#
+#   repo:OWNER@OWNER_ID/REPO@REPO_ID:environment:prod
+#
+# Those IDs cannot be stripped via sub-claim customization, so the credential
+# has to match them exactly. Older repositories still present the plain-name
+# form, so register both and let Entra match whichever actually turns up.
+OWNER="${GITHUB_REPO%%/*}"
+REPO="${GITHUB_REPO##*/}"
+
+if command -v gh >/dev/null 2>&1; then
+  read -r OWNER_ID REPO_ID < <(gh api "repos/${GITHUB_REPO}" --jq '"\(.owner.id) \(.id)"')
+else
+  read -r OWNER_ID REPO_ID < <(
+    curl -fsSL ${GITHUB_TOKEN:+-H "Authorization: Bearer ${GITHUB_TOKEN}"} \
+      "https://api.github.com/repos/${GITHUB_REPO}" |
+      python3 -c 'import json,sys; d=json.load(sys.stdin); print(d["owner"]["id"], d["id"])'
+  )
+fi
+
+IMMUTABLE="${OWNER}@${OWNER_ID}/${REPO}@${REPO_ID}"
+echo "Immutable subject prefix: repo:${IMMUTABLE}"
+
 add_fic "main"        "repo:${GITHUB_REPO}:ref:refs/heads/main"
 add_fic "pullrequest" "repo:${GITHUB_REPO}:pull_request"
 add_fic "prod"        "repo:${GITHUB_REPO}:environment:prod"
+
+add_fic "main-immutable"        "repo:${IMMUTABLE}:ref:refs/heads/main"
+add_fic "pullrequest-immutable" "repo:${IMMUTABLE}:pull_request"
+add_fic "prod-immutable"        "repo:${IMMUTABLE}:environment:prod"
 
 # --- 3. What to paste into GitHub -------------------------------------------
 cat <<EOF
