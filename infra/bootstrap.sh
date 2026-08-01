@@ -136,6 +136,7 @@ Done. Configure the repository (Settings -> Secrets and variables -> Actions):
     ANTHROPIC_API_KEY        <from console.anthropic.com>
     WHATSAPP_ACCESS_TOKEN    <from Meta>
     WHATSAPP_VERIFY_TOKEN    <invent one; Meta echoes it back on webhook setup>
+    WHATSAPP_APP_SECRET      <Meta app dashboard -> App settings -> Basic -> App secret>
 
 Also create an Environment named 'prod' (Settings -> Environments) and add
 yourself as a required reviewer if you want a manual gate before apply.

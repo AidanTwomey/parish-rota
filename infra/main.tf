@@ -193,6 +193,7 @@ resource "azurerm_function_app_flex_consumption" "this" {
     WHATSAPP_PHONE_NUMBER_ID = var.whatsapp_phone_number_id
     WHATSAPP_ACCESS_TOKEN    = var.whatsapp_access_token
     WHATSAPP_VERIFY_TOKEN    = var.whatsapp_verify_token
+    WHATSAPP_APP_SECRET      = var.whatsapp_app_secret
 
     ANTHROPIC_API_KEY = var.anthropic_api_key
   }

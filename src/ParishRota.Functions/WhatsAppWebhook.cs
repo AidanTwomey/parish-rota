@@ -16,8 +16,7 @@ namespace ParishRota.Functions;
 public class WhatsAppWebhook(ILogger<WhatsAppWebhook> logger, IConfiguration configuration)
 {
     // Anonymous because Meta cannot present a Functions key. Authenticity comes
-    // from the verify token on GET and, once implemented, the X-Hub-Signature-256
-    // HMAC on POST — see the TODO below.
+    // from the verify token on GET and the X-Hub-Signature-256 HMAC on POST.
     [Function("WhatsAppWebhook")]
     public async Task<IActionResult> Run(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "whatsapp")] HttpRequest req)
@@ -27,10 +26,31 @@ public class WhatsAppWebhook(ILogger<WhatsAppWebhook> logger, IConfiguration con
             return HandleVerification(req);
         }
 
-        // TODO: verify the X-Hub-Signature-256 HMAC against the Meta app secret
-        // before trusting this payload. Until that lands, the endpoint accepts
-        // anything that can reach it.
-        var payload = await new StreamReader(req.Body).ReadToEndAsync();
+        var appSecret = configuration["WHATSAPP_APP_SECRET"];
+        if (string.IsNullOrEmpty(appSecret))
+        {
+            // Distinct from a signature mismatch on purpose: misconfiguration and
+            // attack look identical from the outside, and only this message tells
+            // you which one you are looking at.
+            logger.LogError(
+                "WHATSAPP_APP_SECRET is not configured, so every inbound payload is being rejected. "
+                + "Copy it from the Meta app dashboard (App settings -> Basic -> App secret).");
+            return new StatusCodeResult(StatusCodes.Status403Forbidden);
+        }
+
+        // Buffered as bytes rather than read as a string: the HMAC covers the
+        // exact bytes Meta sent, so any re-encoding on the way in breaks it.
+        using var buffer = new MemoryStream();
+        await req.Body.CopyToAsync(buffer);
+        var payload = buffer.ToArray();
+
+        if (!MetaSignature.IsValid(payload, req.Headers["X-Hub-Signature-256"].ToString(), appSecret))
+        {
+            logger.LogWarning(
+                "Rejected an inbound payload ({Length} bytes): X-Hub-Signature-256 did not verify.",
+                payload.Length);
+            return new StatusCodeResult(StatusCodes.Status403Forbidden);
+        }
 
         // Meta retries on slow responses and disables endpoints that keep timing
         // out, so acknowledge immediately and do the real work off the request

@@ -28,6 +28,7 @@ env:
   TF_VAR_whatsapp_phone_number_id: ${{ vars.WHATSAPP_PHONE_NUMBER_ID }}
   TF_VAR_whatsapp_access_token: ${{ secrets.WHATSAPP_ACCESS_TOKEN }}
   TF_VAR_whatsapp_verify_token: ${{ secrets.WHATSAPP_VERIFY_TOKEN }}
+  TF_VAR_whatsapp_app_secret: ${{ secrets.WHATSAPP_APP_SECRET }}
   TF_VAR_anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
 
 jobs:

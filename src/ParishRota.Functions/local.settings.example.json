@@ -7,6 +7,9 @@
     "//": "Program.cs wires up the Azure Monitor OpenTelemetry exporter, which throws at startup if this is missing. A dummy key is fine locally.",
     "APPLICATIONINSIGHTS_CONNECTION_STRING": "InstrumentationKey=00000000-0000-0000-0000-000000000000",
 
+    "//app-secret": "Keys the X-Hub-Signature-256 HMAC. Every POST is rejected while this is empty, so set it to any string locally and sign your test payloads with the same one.",
+    "WHATSAPP_APP_SECRET": "local-dev-app-secret",
+
     "WHATSAPP_VERIFY_TOKEN": "local-dev-verify-token",
     "WHATSAPP_ACCESS_TOKEN": "",
     "WHATSAPP_PHONE_NUMBER_ID": "",

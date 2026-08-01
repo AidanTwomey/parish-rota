@@ -5,5 +5,6 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/ParishRota.Domain.Tests/ParishRota.Domain.Tests.csproj" />
+    <Project Path="tests/ParishRota.Functions.Tests/ParishRota.Functions.Tests.csproj" />
   </Folder>
 </Solution>

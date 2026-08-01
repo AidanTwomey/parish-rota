@@ -40,6 +40,13 @@ variable "whatsapp_access_token" {
   sensitive   = true
 }
 
+variable "whatsapp_app_secret" {
+  description = "Meta app secret. Keys the X-Hub-Signature-256 HMAC on inbound webhooks; without it every POST is rejected."
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
 variable "whatsapp_verify_token" {
   description = "Shared secret Meta echoes back when verifying the webhook subscription."
   type        = string
