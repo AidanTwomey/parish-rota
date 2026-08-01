@@ -1,0 +1,18 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+
+    "//": "Program.cs wires up the Azure Monitor OpenTelemetry exporter, which throws at startup if this is missing. A dummy key is fine locally.",
+    "APPLICATIONINSIGHTS_CONNECTION_STRING": "InstrumentationKey=00000000-0000-0000-0000-000000000000",
+
+    "WHATSAPP_VERIFY_TOKEN": "local-dev-verify-token",
+    "WHATSAPP_ACCESS_TOKEN": "",
+    "WHATSAPP_PHONE_NUMBER_ID": "",
+    "ANTHROPIC_API_KEY": "",
+
+    "COSMOS_CONNECTION_STRING": "",
+    "COSMOS_DATABASE_NAME": "parishrota"
+  }
+}
