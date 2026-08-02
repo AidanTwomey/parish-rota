@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -45,7 +46,8 @@ public static class MetaSignature
         }
 
         Span<byte> presented = stackalloc byte[DigestBytes];
-        if (!Convert.TryFromHexString(presentedHex, presented, out var written) || written != DigestBytes)
+        if (Convert.FromHexString(presentedHex, presented, out _, out var written) != OperationStatus.Done
+            || written != DigestBytes)
         {
             return false;
         }

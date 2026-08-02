@@ -42,7 +42,13 @@
       "Bash(curl -fsSL https://raw.githubusercontent.com/actions/upload-artifact/v4/action.yml)",
       "Bash(openssl dgst *)",
       "Bash(command -v dotnet)",
-      "WebFetch(domain:developers.facebook.com)"
+      "WebFetch(domain:developers.facebook.com)",
+      "Bash(command -v devcontainer)",
+      "Bash(devcontainer --version)",
+      "Bash(command -v docker)",
+      "Bash(docker exec festive_kilby *)",
+      "Bash(docker exec *)",
+      "WebFetch(domain:api.github.com)"
     ]
   }
 }

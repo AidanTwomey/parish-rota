@@ -5,6 +5,7 @@ A multi-tenant WhatsApp-based rota service for Catholic parish Readers. First te
 ## Read first
 
 - `CONTEXT.md` — the ubiquitous language. Use these terms exactly (Reader, Rota, Rota Period, Slot, Position, Drop, Cover Request, Swap, Home Mass, Availability Prompt, Volunteer Call, One-off Mass, Coordinator). Challenge and update it when the model shifts.
+- `docs/endpoints.md` — the HTTP contract (one webhook). Keep it accurate.
 - `docs/adr/` — architectural decisions. Notably: WhatsApp-only via Meta Cloud API (0001), multi-tenant from the start (0002), no UI anywhere (0003), liturgical-calendar rota periods (0004), single shared WhatsApp number (0005), Azure Functions + Cosmos free tier (0006), Terraform + GitHub Actions (0007).
 
 ## Stack
@@ -21,3 +22,4 @@ A multi-tenant WhatsApp-based rota service for Catholic parish Readers. First te
 - Adapter code (WhatsApp webhook, Cosmos persistence, outbound messaging) is tested pragmatically — integration-style tests, no strict TDD ceremony.
 - Keep running cost near zero: no always-on compute, minimise business-initiated WhatsApp template messages (they are the only per-message cost).
 - `dotnet test` runs the test suite.
+- Any change to an HTTP route, status code, header contract, or the settings behind them updates `docs/endpoints.md` **in the same change** — a stale contract doc is worse than none, because Meta's webhook fails silently when it disagrees.

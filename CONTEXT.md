@@ -24,7 +24,7 @@ The published schedule of which Reader serves at which Mass, covering one Rota P
 _Avoid_: Schedule, roster
 
 **Rota Period**:
-The span of the liturgical year one Rota covers: Advent & Christmastide, Lent & Eastertide, or a block of Ordinary Time (long seasons are subdivided into roughly 8-week blocks). Boundaries are computed from the liturgical calendar.
+The span of the liturgical year one Rota covers: Advent & Christmastide, Lent & Eastertide, or a block of Ordinary Time. The two named seasons are never subdivided; Ordinary Time is, into blocks of at most eight Sundays. Periods are contiguous — each runs to the day before the next opens — so every Mass belongs to exactly one. Blocks break between a Sunday and the Monday after, never splitting a Saturday vigil from its Sunday. Boundaries are computed from the liturgical calendar.
 _Avoid_: Month, quarter, term
 
 **Unavailability**:

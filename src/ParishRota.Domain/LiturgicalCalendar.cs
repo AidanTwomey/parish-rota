@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace ParishRota.Domain;
 
 /// <summary>
@@ -60,6 +62,122 @@ public static class LiturgicalCalendar
         return epiphany.Day >= 7
             ? epiphany.AddDays(1)
             : epiphany.AddDays(7);
+    }
+
+    /// <summary>
+    /// The Rota Period a given date falls in (ADR 0004).
+    /// </summary>
+    public static RotaPeriod PeriodContaining(DateOnly date)
+    {
+        // Advent & Christmastide straddles New Year, so a date belongs to it
+        // either by being on or after this year's Advent Sunday, or by falling
+        // in the Christmastide tail of the period that opened last year.
+        if (date >= AdventSunday(date.Year))
+        {
+            return new RotaPeriod(
+                "Advent & Christmastide",
+                AdventSunday(date.Year),
+                BaptismOfTheLord(date.Year + 1));
+        }
+
+        if (date <= BaptismOfTheLord(date.Year))
+        {
+            return new RotaPeriod(
+                "Advent & Christmastide",
+                AdventSunday(date.Year - 1),
+                BaptismOfTheLord(date.Year));
+        }
+
+        if (date >= AshWednesday(date.Year) && date <= Pentecost(date.Year))
+        {
+            return new RotaPeriod(
+                "Lent & Eastertide",
+                AshWednesday(date.Year),
+                Pentecost(date.Year));
+        }
+
+        if (date < AshWednesday(date.Year))
+        {
+            return OrdinaryTime(
+                BaptismOfTheLord(date.Year).AddDays(1),
+                AshWednesday(date.Year).AddDays(-1));
+        }
+
+        return LateOrdinaryTimeBlockContaining(date);
+    }
+
+    /// <summary>
+    /// Ordinary Time after Pentecost runs to the eve of Advent — up to 27 weeks,
+    /// far too long to ask a Reader to commit to (ADR 0004). It is split into the
+    /// fewest blocks that keeps each within <see cref="MaxSundaysPerBlock"/>,
+    /// sharing the Sundays out as evenly as possible and giving the remainder to
+    /// the earliest blocks.
+    ///
+    /// Blocks run Monday to Sunday, so a Saturday vigil Mass always sits in the
+    /// same block as the Sunday it belongs to.
+    /// </summary>
+    private static RotaPeriod LateOrdinaryTimeBlockContaining(DateOnly date)
+    {
+        var start = Pentecost(date.Year).AddDays(1);
+        var end = AdventSunday(date.Year).AddDays(-1);
+
+        var sundays = SundaysBetween(start, end);
+        var blockCount = (sundays.Count + MaxSundaysPerBlock - 1) / MaxSundaysPerBlock;
+        var baseSundays = sundays.Count / blockCount;
+        var longBlocks = sundays.Count % blockCount;
+
+        var blockStart = start;
+        var taken = 0;
+
+        for (var block = 0; block < blockCount; block++)
+        {
+            taken += baseSundays + (block < longBlocks ? 1 : 0);
+
+            // Every block but the last ends on its final Sunday. The last one
+            // runs on through the stray weekdays before Advent Sunday.
+            var blockEnd = block == blockCount - 1 ? end : sundays[taken - 1];
+
+            if (date <= blockEnd)
+            {
+                return OrdinaryTime(blockStart, blockEnd);
+            }
+
+            blockStart = blockEnd.AddDays(1);
+        }
+
+        throw new ArgumentOutOfRangeException(
+            nameof(date),
+            date,
+            "Date does not fall in any Rota Period, which should be impossible.");
+    }
+
+    private const int MaxSundaysPerBlock = 8;
+
+    private static List<DateOnly> SundaysBetween(DateOnly start, DateOnly end)
+    {
+        var sundays = new List<DateOnly>();
+        var firstSunday = start.AddDays(((int)DayOfWeek.Sunday - (int)start.DayOfWeek + 7) % 7);
+
+        for (var sunday = firstSunday; sunday <= end; sunday = sunday.AddDays(7))
+        {
+            sundays.Add(sunday);
+        }
+
+        return sundays;
+    }
+
+    /// <summary>
+    /// Ordinary Time blocks are named by the months they span, because that is
+    /// what means something to a Reader being asked for unavailable dates —
+    /// "Ordinary Time (May–July)" rather than a block number or a week range.
+    /// Month names are invariant so the name never shifts with server locale.
+    /// </summary>
+    private static RotaPeriod OrdinaryTime(DateOnly start, DateOnly end)
+    {
+        var from = start.ToString("MMMM", CultureInfo.InvariantCulture);
+        var to = end.ToString("MMMM", CultureInfo.InvariantCulture);
+
+        return new RotaPeriod($"Ordinary Time ({from}–{to})", start, end);
     }
 
     private static DateOnly EpiphanySunday(int year)
